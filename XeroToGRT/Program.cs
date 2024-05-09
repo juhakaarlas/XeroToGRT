@@ -1,4 +1,5 @@
 ﻿using XeroChronoImporter;
+using XeroToGRT.Exporters;
 
 namespace XeroToGRT
 {
@@ -6,7 +7,12 @@ namespace XeroToGRT
     {
         static void Main(string[] args)
         {
-            Parser.Process(args[0]);
+            var session = Parser.Process(args[0]);
+
+            if (session == null) { return; }
+
+            var exporter = new MagnetoSpeedCsvExporter(session);
+            exporter.Export(args[1]);
         }
     }
 }

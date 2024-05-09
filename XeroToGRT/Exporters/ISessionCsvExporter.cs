@@ -2,8 +2,8 @@
 
 namespace XeroToGRT.Exporters
 {
-    internal interface ISessionCsvExporter
+    public interface ISessionCsvExporter
     {
-        bool Export(ShotSession session, string path);
+        void Export(string path);
     }
 }
