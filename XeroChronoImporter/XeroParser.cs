@@ -2,9 +2,9 @@
 
 namespace XeroChronoImporter
 {
-    public class Parser
+    public class XeroParser
     {
-        public static void Process(string path)
+        public static ShotSession? Process(string path)
         {
             Console.WriteLine("FIT Decoder for Garmin Xero C1 Pro");
            
@@ -26,17 +26,17 @@ namespace XeroChronoImporter
                 catch (FileTypeException ex)
                 {
                     Console.WriteLine("Decoder caught FileTypeException: " + ex.Message);
-                    return;
+                    return null;
                 }
                 catch (FitException ex)
                 {
                     Console.WriteLine("Decoder caught FitException: " + ex.Message);
-                    return;
+                    return null;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Decoder caught Exception: " + ex.Message);
-                    return;
+                    return null;
                 }
                 finally
                 {
@@ -53,14 +53,16 @@ namespace XeroChronoImporter
 
                 var session = sessionParser.ParseShotSession();
 
-                // Export a CSV file 
                 Console.WriteLine($"Session parsed with {session.ShotCount} shots");
+
+                return session;
                 
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception {ex}");
             }
+            return null;
         }
     }
 }
