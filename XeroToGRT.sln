@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XeroToGRT", "XeroToGRT\XeroToGRT.csproj", "{2DDDDC0F-23EF-4966-BF39-F92FCA6E06EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XeroChronoImporter", "FitImporter\XeroChronoImporter.csproj", "{0536B2D5-2B8E-44C2-AC76-BD4313945036}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XeroChronoImporter", "XeroChronoImporter\XeroChronoImporter.csproj", "{0536B2D5-2B8E-44C2-AC76-BD4313945036}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
