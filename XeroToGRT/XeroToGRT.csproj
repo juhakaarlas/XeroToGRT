@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FitImporter\XeroChronoImporter.csproj" />
+    <ProjectReference Include="..\XeroChronoImporter\XeroChronoImporter.csproj" />
   </ItemGroup>
 
 </Project>
