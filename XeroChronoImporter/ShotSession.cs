@@ -4,7 +4,7 @@
     {
         public int ShotNumber { get; set; }
 
-        public float Speed { get; set; }
+        public double Speed { get; set; }
 
         public DateTime Timestamp { get; set; }
 
@@ -14,6 +14,8 @@
     public class ShotSession
     {
         private const double InvalidSpeed = -1;
+
+        private const int RoundingPrecision = 1;
 
         public int Id { get; set; }
 
@@ -82,7 +84,7 @@
             }
         }
 
-        public double ExtremeSpread => MaxSpeed - MinSpeed;
+        public double ExtremeSpread => Math.Round(MaxSpeed - MinSpeed, RoundingPrecision);
 
         public List<Shot>? Shots { get; set; }
 
@@ -90,14 +92,14 @@
         {
             if (Shots == null) { return InvalidSpeed; }
 
-            return Shots.Average(s => s.Speed);
+            return  Math.Round(Shots.Average(s => s.Speed), RoundingPrecision);
         }
 
         private double CalculateStdDev()
         {
             if (Shots == null) { return InvalidSpeed; }
 
-            return Math.Sqrt(Shots.Average(s => Math.Pow(s.Speed - AvgSpeed, 2)));
+            return Math.Round(Math.Sqrt(Shots.Average(s => Math.Pow(s.Speed - AvgSpeed, 2))), RoundingPrecision);
         }
     }
 }

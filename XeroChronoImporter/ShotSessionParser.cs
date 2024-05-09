@@ -5,6 +5,8 @@ namespace XeroChronoImporter
 {
     public class ShotSessionParser
     {
+        private const int SpeedRoundingPrecision = 1;
+
         private FitMessages _messages;
 
         public bool IsShotSessionFile => _firstFileIdMesg != null ? (_firstFileIdMesg.GetType() ?? File.Invalid) == ShotSessionDecoder.ShotSessionFile : false;
@@ -39,8 +41,8 @@ namespace XeroChronoImporter
             {
                 var shot = new Shot()
                 {
-                    Speed = (float)shotData.GetShotSpeed(),
-                    Unit = (string)shotData.GetField("ShotSpeed").Units,
+                    Speed = Math.Round((double)shotData.GetShotSpeed(), SpeedRoundingPrecision),
+                    Unit = shotData.GetField("ShotSpeed").Units,
                     Timestamp = shotData.GetTimestamp().GetDateTime()
                 };
 
