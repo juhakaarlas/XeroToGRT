@@ -4,23 +4,35 @@ namespace XeroChronoImporter
 {
     public class XeroParser
     {
-        public static ShotSession? Process(string path)
+        public static ShotSession? Process(string path, bool verbose)
         {
-            Console.WriteLine("FIT Decoder for Garmin Xero C1 Pro");
+            if (verbose)
+            {
+                Console.WriteLine("FIT Decoder for Garmin Xero C1 Pro");
+            }
            
             try
             {
                 // Attempt to open the input file
                 FileStream fileStream = new FileStream(path, FileMode.Open);
-                Console.WriteLine($"Opening {path}");
+                
+                if (verbose)
+                {
+                    Console.WriteLine($"Opening {path}");
+                }
 
                 // Create our FIT Decoder
                 ShotSessionDecoder fitDecoder = new ShotSessionDecoder(fileStream, ShotSessionDecoder.ShotSessionFile);
+                fitDecoder.Verbose = verbose;
 
                 // Decode the FIT file
                 try
                 {
-                    Console.WriteLine("Decoding...");
+                    if (verbose)
+                    {
+                        Console.WriteLine($"Decoding {path}...");
+                    }
+                    
                     fitDecoder.Decode();
                 }
                 catch (FileTypeException ex)
@@ -42,18 +54,20 @@ namespace XeroChronoImporter
                 {
                     fileStream.Close();
                 }
-
                 
-                // Check the time zone offset in the Activity message.
-                var timestamp = fitDecoder.FitMessages.ChronoShotSessionMesgs.FirstOrDefault().GetTimestamp().GetDateTime();
-                
-                Console.WriteLine($"The timestamp this file is {timestamp}");
+                if (verbose)
+                {
+                    var timestamp = fitDecoder.FitMessages.ChronoShotSessionMesgs.FirstOrDefault().GetTimestamp().GetDateTime();
+                    Console.WriteLine($"The timestamp in this file is {timestamp}");
+                }
 
                 var sessionParser = new ShotSessionParser(fitDecoder.FitMessages);
-
                 var session = sessionParser.ParseShotSession();
 
-                Console.WriteLine($"Session parsed with {session.ShotCount} shots");
+                if (verbose)
+                {
+                    Console.WriteLine($"Session parsed with {session.ShotCount} shots");
+                }
 
                 return session;
                 

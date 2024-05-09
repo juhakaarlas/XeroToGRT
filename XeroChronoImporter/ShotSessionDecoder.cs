@@ -1,4 +1,5 @@
 ﻿using Dynastream.Fit;
+using Microsoft.VisualBasic;
 
 namespace XeroChronoImporter { 
 
@@ -14,6 +15,8 @@ namespace XeroChronoImporter {
         private Dynastream.Fit.File fileType;
 
         public const Dynastream.Fit.File ShotSessionFile = (Dynastream.Fit.File) 54;
+
+        public bool Verbose { get; set; }
 
         public ShotSessionDecoder(Stream stream, Dynastream.Fit.File fileType)
         {
@@ -45,28 +48,35 @@ namespace XeroChronoImporter {
             // Connect FitListener to get lists of each message type with FitMessages
             decoder.MesgEvent += _fitListener.OnMesg;
 
+            if (Verbose)
+            {
+                mesgBroadcaster.ChronoShotSessionMesgEvent += OnChronoShotSessionMesg;
+                mesgBroadcaster.ChronoShotDataMesgEvent += OnChronoShotDataMesg ;
+            }
+
             // Decode the FIT File
             try
             {
                 bool readOK = decoder.Read(inputStream);
 
-                if (readOK && FitMessages.ChronoShotSessionMesgs.Count > 0)
-                {
-                    Console.WriteLine("Sessions");
-                    foreach (var session in FitMessages.ChronoShotSessionMesgs)
-                    {
-                        Console.WriteLine($"{session.Name} {session.Num} {session.LocalNum} {session.GetAvgSpeed()}");
-                    }
-                }
+                //if (readOK && FitMessages.ChronoShotSessionMesgs.Count > 0)
+                //{
+                  
+                //    Console.WriteLine("Sessions");
+                //    foreach (var session in FitMessages.ChronoShotSessionMesgs)
+                //    {
+                //        Console.WriteLine($"{session.Name} {session.Num} {session.LocalNum} {session.GetAvgSpeed()}");
+                //    }
+                //}
 
-                if (readOK && FitMessages.ChronoShotDataMesgs.Count > 0)
-                {
-                    Console.WriteLine("Shots");
-                    foreach (var item in FitMessages.ChronoShotDataMesgs)
-                    {
-                        Console.WriteLine($"{item.Name} {item.Num} {item.LocalNum} {item.GetShotNum()} {item.GetShotSpeed()}");
-                    }
-                }
+                //if (readOK && FitMessages.ChronoShotDataMesgs.Count > 0)
+                //{
+                //    Console.WriteLine("Shots");
+                //    foreach (var item in FitMessages.ChronoShotDataMesgs)
+                //    {
+                //        Console.WriteLine($"{item.Name} {item.Num} {item.LocalNum} {item.GetShotNum()} {item.GetShotSpeed()}");
+                //    }
+                //}
 
                 return readOK;
             }
@@ -80,6 +90,17 @@ namespace XeroChronoImporter {
             }
         }
 
+        private void OnChronoShotDataMesg(object sender, MesgEventArgs e)
+        {
+            var msg = e.mesg as ChronoShotDataMesg;
+            Console.WriteLine($"{msg.Name} {msg.Num} {msg.LocalNum} {msg.GetShotNum()} {msg.GetShotSpeed()}");
+        }
+
+        private void OnChronoShotSessionMesg(object sender, MesgEventArgs e)
+        {
+            var msg = e.mesg as ChronoShotSessionMesg;
+            Console.WriteLine($"Session {msg.Name} avg speed: {msg.GetAvgSpeed()}");
+        }
 
         public void OnFileIdMesg(object sender, MesgEventArgs e)
         {
@@ -89,7 +110,10 @@ namespace XeroChronoImporter {
 
             if (fileIdMsg == null) { return; }
 
-            Console.WriteLine($"file type: {fileIdMsg.GetType()}");
+            if (Verbose)
+            {
+                Console.WriteLine($"File type: {fileIdMsg.GetType()}");
+            }
 
             if ((e.mesg as FileIdMesg).GetType() != fileType)
             {
