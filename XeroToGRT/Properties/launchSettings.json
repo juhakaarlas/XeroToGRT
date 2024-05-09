@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Debug Fit Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\juhak\\OneDrive\\Asiakirjat\\Ammunta\\Reloading\\Measurements\\04-26-2024_18-37-32.fit\"",
+      "workingDirectory": "C:\\Users\\juhak\\source\\repos\\XeroToGRT"
+    }
+  }
+}

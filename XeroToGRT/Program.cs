@@ -1,10 +1,12 @@
-﻿namespace XeroToGRT
+﻿using XeroChronoImporter;
+
+namespace XeroToGRT
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Parser.Process(args[0]);
         }
     }
 }
