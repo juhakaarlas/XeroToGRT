@@ -82,6 +82,8 @@
             }
         }
 
+        public double ExtremeSpread => MaxSpeed - MinSpeed;
+
         public List<Shot>? Shots { get; set; }
 
         private double CalculateAvgSpeed()
