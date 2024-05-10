@@ -4,50 +4,51 @@ namespace XeroChronoImporter
 {
     public class XeroParser
     {
-        public static ShotSession? Process(string path, bool verbose)
+        public bool Verbose {  get; set; }
+
+        public XeroParser()
         {
-            if (verbose)
-            {
-                Console.WriteLine("FIT Decoder for Garmin Xero C1 Pro");
-            }
+            Verbose = false;
+        }
+
+        public XeroParser(bool verbose) { 
+            Verbose = verbose;
+        }
+
+        public ShotSession? Process(string path)
+        {
+            LogOutput("FIT Decoder for Garmin Xero C1 Pro");
            
             try
             {
                 // Attempt to open the input file
                 FileStream fileStream = new FileStream(path, FileMode.Open);
                 
-                if (verbose)
-                {
-                    Console.WriteLine($"Opening {path}");
-                }
+                LogOutput($"Opening {path}");
 
                 // Create our FIT Decoder
                 ShotSessionDecoder fitDecoder = new ShotSessionDecoder(fileStream, ShotSessionDecoder.ShotSessionFile);
-                fitDecoder.Verbose = verbose;
+                fitDecoder.Verbose = Verbose;
 
                 // Decode the FIT file
                 try
                 {
-                    if (verbose)
-                    {
-                        Console.WriteLine($"Decoding {path}...");
-                    }
-                    
+                    LogOutput($"Decoding {path}...");
                     fitDecoder.Decode();
                 }
                 catch (FileTypeException ex)
                 {
-                    Console.WriteLine("Decoder caught FileTypeException: " + ex.Message);
+                    Console.Error.WriteLine("Decoder caught FileTypeException: " + ex.Message);
                     return null;
                 }
                 catch (FitException ex)
                 {
-                    Console.WriteLine("Decoder caught FitException: " + ex.Message);
+                    Console.Error.WriteLine("Decoder caught FitException: " + ex.Message);
                     return null;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Decoder caught Exception: " + ex.Message);
+                    Console.Error.WriteLine("Decoder caught Exception: " + ex.Message);
                     return null;
                 }
                 finally
@@ -55,28 +56,26 @@ namespace XeroChronoImporter
                     fileStream.Close();
                 }
                 
-                if (verbose)
-                {
-                    var timestamp = fitDecoder.FitMessages.ChronoShotSessionMesgs.FirstOrDefault().GetTimestamp().GetDateTime();
-                    Console.WriteLine($"The timestamp in this file is {timestamp}");
-                }
-
                 var sessionParser = new ShotSessionParser(fitDecoder.FitMessages);
                 var session = sessionParser.ParseShotSession();
-
-                if (verbose)
-                {
-                    Console.WriteLine($"Session parsed with {session.ShotCount} shots");
-                }
-
+                
+                LogOutput($"Session parsed with {session.ShotCount} shots");
+                
                 return session;
                 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception {ex}");
+                Console.Error.WriteLine($"Exception {ex}");
             }
             return null;
+        }
+
+        private void LogOutput(string message)
+        {
+            if (!Verbose) return;
+
+            Console.WriteLine(message);
         }
     }
 }

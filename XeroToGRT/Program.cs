@@ -31,7 +31,8 @@ namespace XeroToGRT
 
         static void Process(string input, string output, bool verbose)
         {
-            var session = XeroParser.Process(input, verbose);
+            var parser = new XeroParser(verbose);
+            var session = parser.Process(input);
             if (session == null) { return; }
 
             var exporter = new MagnetoSpeedCsvExporter();
