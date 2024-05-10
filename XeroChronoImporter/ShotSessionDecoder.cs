@@ -1,5 +1,4 @@
 ﻿using Dynastream.Fit;
-using Microsoft.VisualBasic;
 
 namespace XeroChronoImporter { 
 
@@ -57,35 +56,14 @@ namespace XeroChronoImporter {
             // Decode the FIT File
             try
             {
-                bool readOK = decoder.Read(inputStream);
-
-                //if (readOK && FitMessages.ChronoShotSessionMesgs.Count > 0)
-                //{
-                  
-                //    Console.WriteLine("Sessions");
-                //    foreach (var session in FitMessages.ChronoShotSessionMesgs)
-                //    {
-                //        Console.WriteLine($"{session.Name} {session.Num} {session.LocalNum} {session.GetAvgSpeed()}");
-                //    }
-                //}
-
-                //if (readOK && FitMessages.ChronoShotDataMesgs.Count > 0)
-                //{
-                //    Console.WriteLine("Shots");
-                //    foreach (var item in FitMessages.ChronoShotDataMesgs)
-                //    {
-                //        Console.WriteLine($"{item.Name} {item.Num} {item.LocalNum} {item.GetShotNum()} {item.GetShotSpeed()}");
-                //    }
-                //}
-
-                return readOK;
+                return decoder.Read(inputStream);
             }
         
             catch (Exception ex) when (
                 ex is FileTypeException || 
                 ex is FitException)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
         }
