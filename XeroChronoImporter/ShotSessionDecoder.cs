@@ -71,12 +71,18 @@ namespace XeroChronoImporter {
         private void OnChronoShotDataMesg(object sender, MesgEventArgs e)
         {
             var msg = e.mesg as ChronoShotDataMesg;
+
+            if (msg == null) { return; }
+            
             Console.WriteLine($"{msg.Name} {msg.Num} {msg.LocalNum} {msg.GetShotNum()} {msg.GetShotSpeed()}");
         }
 
         private void OnChronoShotSessionMesg(object sender, MesgEventArgs e)
         {
             var msg = e.mesg as ChronoShotSessionMesg;
+            
+            if (msg == null) { return; }
+
             Console.WriteLine($"Session {msg.Name} avg speed: {msg.GetAvgSpeed()}");
         }
 
@@ -93,9 +99,9 @@ namespace XeroChronoImporter {
                 Console.WriteLine($"File type: {fileIdMsg.GetType()}");
             }
 
-            if ((e.mesg as FileIdMesg).GetType() != fileType)
+            if (fileIdMsg.GetType() != fileType)
             {
-                throw new FileTypeException($"Expected FIT File Type: {fileType}, received File Type: {(e.mesg as FileIdMesg).GetType()}");
+                throw new FileTypeException($"Expected FIT File Type: {fileType}, received File Type: {fileIdMsg.GetType()}");
             }
         }
 
@@ -103,7 +109,7 @@ namespace XeroChronoImporter {
         {
             foreach (Field field in e.mesg.Fields)
             {
-                if (field.Name.ToLower() != "unknown")
+                if (!field.Name.Equals("unknown", StringComparison.InvariantCultureIgnoreCase))
                 {
                     RecordFieldNames.Add(field.Name);
                 }

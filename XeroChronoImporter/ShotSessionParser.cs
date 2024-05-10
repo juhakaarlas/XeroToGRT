@@ -7,11 +7,17 @@ namespace XeroChronoImporter
     {
         private const int SpeedRoundingPrecision = 1;
 
-        private FitMessages _messages;
+        private readonly FitMessages _messages;
 
-        public bool IsShotSessionFile => _firstFileIdMesg != null ? (_firstFileIdMesg.GetType() ?? File.Invalid) == ShotSessionDecoder.ShotSessionFile : false;
+        public bool IsShotSessionFile
+        {
+            get
+            {
+                return FirstFileIdMesg != null && (FirstFileIdMesg.GetType() ?? File.Invalid) == ShotSessionDecoder.ShotSessionFile;
+            }
+        }
 
-        public FileIdMesg _firstFileIdMesg => _messages.FileIdMesgs.FirstOrDefault();
+        private FileIdMesg? FirstFileIdMesg => _messages.FileIdMesgs.FirstOrDefault();
 
         public ShotSessionParser(FitMessages messages)
         {
@@ -22,7 +28,7 @@ namespace XeroChronoImporter
         {
             if (!IsShotSessionFile)
             {
-                throw new Exception($"Expected FIT File Type: ShotSession, received File Type: {_firstFileIdMesg?.GetType()}");
+                throw new Exception($"Expected FIT File Type: ShotSession, received File Type: {FirstFileIdMesg?.GetType()}");
             }
 
             var fitSession = _messages.ChronoShotSessionMesgs.FirstOrDefault();
@@ -39,15 +45,17 @@ namespace XeroChronoImporter
 
             foreach (var shotData in shots)
             {
+                double value = shotData.GetShotSpeed() ?? 0.0;
+                var shotNum = (UInt16)shotData.GetFieldValue("ShotNum");
+
                 var shot = new Shot()
                 {
-                    Speed = Math.Round((double)shotData.GetShotSpeed(), SpeedRoundingPrecision),
+                    Speed = Math.Round(value, SpeedRoundingPrecision),
                     Unit = shotData.GetField("ShotSpeed").Units,
-                    Timestamp = shotData.GetTimestamp().GetDateTime()
+                    Timestamp = shotData.GetTimestamp().GetDateTime(),
+                    ShotNumber = shotNum
                 };
 
-                var shotNum = (UInt16)shotData.GetFieldValue("ShotNum");
-                shot.ShotNumber = checked((int)shotNum);
                 shotSession.Shots.Add(shot);
             }
 
