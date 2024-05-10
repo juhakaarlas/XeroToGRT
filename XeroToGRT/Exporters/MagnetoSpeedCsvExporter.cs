@@ -41,6 +41,7 @@ namespace XeroToGRT.Exporters
             sb.AppendFormat(StatsFormat, _session.AvgSpeed, _session.StdDev);
             sb.AppendLine();
             sb.AppendFormat(SpreadFormat, _session.ExtremeSpread);
+            sb.AppendLine();
             sb.AppendLine(SeriesEnd);
 
             return sb;
