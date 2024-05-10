@@ -16,18 +16,18 @@ namespace XeroToGRT.Exporters
 
         private ShotSession _session;
 
-        public MagnetoSpeedCsvExporter(ShotSession session)
+        public void Init(ShotSession session)
         {
             _session = session;
         }
 
-        public void Export(string path)
+        public void Export(string outPath)
         {
             var sb = CreateSessionCsv();
             sb = CreateSeriesCsv(sb);
             sb.AppendLine(EOF);
 
-            File.WriteAllText(path, sb.ToString());
+            File.WriteAllText(outPath, sb.ToString());
         }
 
         private StringBuilder CreateSessionCsv() 

@@ -4,6 +4,8 @@ namespace XeroToGRT.Exporters
 {
     public interface ISessionCsvExporter
     {
-        void Export(string path);
+        void Init(ShotSession session);
+
+        void Export(string outPath);
     }
 }

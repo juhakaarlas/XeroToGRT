@@ -25,11 +25,18 @@ namespace XeroToGRT
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(o =>
                 {
-                    var session = XeroParser.Process(o.InputFile, o.Verbose);
-                    if (session == null) { return; }
-                    var exporter = new MagnetoSpeedCsvExporter(session);
-                    exporter.Export(o.OutFile);
+                    Process(o.InputFile, o.OutFile, o.Verbose);
                 });
+        }
+
+        static void Process(string input, string output, bool verbose)
+        {
+            var session = XeroParser.Process(input, verbose);
+            if (session == null) { return; }
+
+            var exporter = new MagnetoSpeedCsvExporter();
+            exporter.Init(session);
+            exporter.Export(output);
         }
     }
 }
