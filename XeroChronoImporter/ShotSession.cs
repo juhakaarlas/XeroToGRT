@@ -21,7 +21,7 @@
 
         public DateTime StartTime { get; set; }
 
-        public int ShotCount => Shots.Count;
+        public int? ShotCount => Shots?.Count;
 
         private double _avgSpeed = InvalidSpeed;
 

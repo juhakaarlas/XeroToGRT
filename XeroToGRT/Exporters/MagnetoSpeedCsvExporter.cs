@@ -14,7 +14,7 @@ namespace XeroToGRT.Exporters
         private const string SeriesHeader = "Series,Shot,Speed,";
         private const string ShotFormat = "1,{0},{1},{2}";
 
-        private ShotSession _session;
+        private ShotSession? _session;
 
         public void Init(ShotSession session)
         {
@@ -34,6 +34,8 @@ namespace XeroToGRT.Exporters
         {
             StringBuilder sb = new StringBuilder();
 
+            if (_session == null) { return sb; }
+
             sb.AppendFormat(SeriesFormat, _session.ShotCount);
             sb.AppendLine();
             sb.AppendFormat(MinMaxFormat, _session.MinSpeed, _session.MaxSpeed);
@@ -50,6 +52,8 @@ namespace XeroToGRT.Exporters
         private StringBuilder CreateSeriesCsv(StringBuilder sb)
         {
             sb.AppendLine(SeriesHeader);
+
+            if (_session == null || _session.Shots == null) { return  sb; }
 
             foreach (var shot in _session.Shots)
             {
