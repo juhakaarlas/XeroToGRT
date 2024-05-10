@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ActivityParser.cs" />
+    <Compile Remove="Export.cs" />
+    <Compile Remove="Extensions.cs" />
+    <Compile Remove="SessionMessages.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Garmin.FIT.Sdk" Version="21.139.2" />
+  </ItemGroup>
+
+</Project>

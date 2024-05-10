@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Debug Fit Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "-v -i \"04-26-2024_18-37-32.fit\" -o \"xero.csv\"",
+      "workingDirectory": "$(SolutionDir)"
+    }
+  }
+}
