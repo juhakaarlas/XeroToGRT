@@ -2,8 +2,8 @@
   "profiles": {
     "Debug Fit Parser": {
       "commandName": "Project",
-      "commandLineArgs": "-v -i \"C:\\Users\\juhak\\OneDrive\\Asiakirjat\\Ammunta\\Reloading\\Measurements\\04-26-2024_18-37-32.fit\" -o \"D:\\users\\juha\\Downloads\\xero.csv\"",
-      "workingDirectory": "C:\\Users\\juhak\\source\\repos\\XeroToGRT"
+      "commandLineArgs": "-v -i \"04-26-2024_18-37-32.fit\" -o \"xero.csv\"",
+      "workingDirectory": "$(SolutionDir)"
     }
   }
 }
