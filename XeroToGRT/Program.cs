@@ -1,4 +1,5 @@
-﻿using XeroChronoImporter;
+﻿using System.Diagnostics.CodeAnalysis;
+using XeroChronoImporter;
 using XeroToGRT.Exporters;
 using CommandLine;
 
@@ -18,6 +19,7 @@ namespace XeroToGRT
             public string InputFile { get; set; }
         }
 
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Options))]
         static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
