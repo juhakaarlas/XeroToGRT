@@ -33,6 +33,10 @@ namespace XeroChronoImporter
             {
                 var session = ReadSessionHeader(reader);
 
+                if (session == null) return null;
+
+                if (session == null) return null;
+
                 string speedUnit = ReadShotsHeader(reader) ?? "m/s";
 
                 List<Shot> shots = ReadShots(reader, speedUnit);
@@ -55,6 +59,8 @@ namespace XeroChronoImporter
             while (reader.Peek() != '-')
             {
                 var line = reader.ReadLine();
+
+                if (string.IsNullOrEmpty(line)) continue;
                 var values = line.Split(',');
 
                 var expected = _sessionDataExpectedLineOrder[pos];
@@ -70,9 +76,13 @@ namespace XeroChronoImporter
 
             // skip the separator and read the session date
             reader.ReadLine();
-            string sessionDate = reader.ReadLine();
+            string? sessionDate = reader.ReadLine();
 
-            session.StartTime = DateTime.Parse(sessionDate);
+            if (!string.IsNullOrEmpty(sessionDate)) 
+            {
+                session.StartTime = DateTime.Parse(sessionDate);
+            }
+            
             return session;
 
         }
@@ -84,7 +94,12 @@ namespace XeroChronoImporter
             while (reader.Peek() != '-')
             {
                 var shotCsv = reader.ReadLine();
-                var shotData = shotCsv.Split(',');
+
+                if (string.IsNullOrEmpty(shotCsv)) continue;
+
+                string[]? shotData = shotCsv.Split(',');
+
+                if (shotData == null || shotData.Length == 0) continue;
 
                 var shot = new Shot()
                 {

@@ -30,7 +30,7 @@
 
         public bool CleanBore { get; set; }
 
-        public string Notes {  get; set; }
+        public string? Notes {  get; set; }
     }
 
     public class ShotSession
@@ -49,7 +49,7 @@
 
         public string? SpeedUnit => Shots?.FirstOrDefault()?.Unit;
 
-        public string CartridgeType { get; set; }
+        public string? CartridgeType { get; set; }
 
         public double Weight { get; set; }
 

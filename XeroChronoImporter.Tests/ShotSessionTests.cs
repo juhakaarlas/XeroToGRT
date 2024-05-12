@@ -9,6 +9,7 @@ namespace XeroChronoImporter.Tests
             new Shot ()
             {
                 Speed = 1,
+                Unit = "m/s"
             },
             new Shot ()
             {
@@ -20,7 +21,7 @@ namespace XeroChronoImporter.Tests
             }
 
         };
-            
+
 
         [Fact]
         public void AvgSpeed_Returns_Correct_Value()
@@ -41,6 +42,51 @@ namespace XeroChronoImporter.Tests
             };
 
             Assert.Equal(3, target.ShotCount);
+        }
+
+        [Fact]
+        public void SpeedUnit_Returns_Correct_Value()
+        {
+            var target = new ShotSession()
+            {
+                Shots = _testShots
+            };
+
+            Assert.Equal("m/s", target.SpeedUnit);
+        }
+
+        [Fact]
+        public void MaxSpeed_Returns_Correct_Value()
+        {
+            var target = new ShotSession()
+            {
+                Shots = _testShots
+            };
+
+            Assert.Equal(3, target.MaxSpeed);
+        }
+
+        [Fact]
+        public void MinSpeed_Returns_Correct_Value()
+        {
+            var target = new ShotSession()
+            {
+                Shots = _testShots
+            };
+
+            Assert.Equal(1, target.MinSpeed);
+        }
+
+        [Fact]
+        public void ExtremeSpread_Returns_Correct_Value()
+        {
+            var target = new ShotSession()
+            {
+                Shots = _testShots
+            };
+
+            Assert.Equal(2, target.ExtremeSpread);
+            
         }
     }
 }
