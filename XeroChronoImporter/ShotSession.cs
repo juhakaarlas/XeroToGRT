@@ -37,7 +37,7 @@
     {
         private const double InvalidSpeed = -1;
 
-        private const int RoundingPrecision = 1;
+        public const int RoundingPrecision = 1;
 
         public int Id { get; set; }
 
