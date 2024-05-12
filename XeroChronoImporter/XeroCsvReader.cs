@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XeroChronoImporter
+﻿namespace XeroChronoImporter
 {
-
     public class XeroCsvReader
     {
         private const string SessionAvgSpeed = "AVERAGE SPEED";
@@ -50,6 +42,15 @@ namespace XeroChronoImporter
             }
         }
 
+        public (DateOnly date, TimeOnly time) GetDateTimeString(string xeroSessionDate)
+        {
+            string[] date = xeroSessionDate.Split("at");
+            string datePart = date[0].Trim().Replace("\"", string.Empty);
+            string timePart = date[1].Trim().Replace("\"", string.Empty);
+
+            return (DateOnly.Parse(datePart), TimeOnly.ParseExact(timePart, "HH.mm"));
+        }
+
         private ShotSession ReadSessionData(StreamReader reader, ShotSession session)
         {
             int pos = 0;
@@ -80,7 +81,11 @@ namespace XeroChronoImporter
 
             if (!string.IsNullOrEmpty(sessionDate)) 
             {
-                session.StartTime = DateTime.Parse(sessionDate);
+                string[] date = sessionDate.Split(',');
+
+                (var datePart, var timePart) = GetDateTimeString(date[1]);
+
+                session.StartTime = new DateTime(datePart, timePart);
             }
             
             return session;
@@ -101,14 +106,19 @@ namespace XeroChronoImporter
 
                 if (shotData == null || shotData.Length == 0) continue;
 
+
+                var shotTime = shotData[5].Replace('.', ':');
+                string cleanBore = string.IsNullOrEmpty(shotData[6].Trim()) ? "false": shotData[6];
+                string coldBore = string.IsNullOrEmpty(shotData[7].Trim()) ? "false" : shotData[6];
+
                 var shot = new Shot()
                 {
                     Unit = speedUnit,
                     ShotNumber = int.Parse(shotData[0]),
                     Speed = double.Parse(shotData[1]),
-                    Time = TimeOnly.Parse(shotData[5]),
-                    CleanBore = bool.Parse(shotData[6]),
-                    ColdBore = bool.Parse(shotData[7]),
+                    Time = TimeOnly.Parse(shotTime),
+                    CleanBore = bool.Parse(cleanBore),
+                    ColdBore = bool.Parse(coldBore),
                     Notes = shotData[8]
                 };
 

@@ -27,20 +27,53 @@ namespace XeroToGRT
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(o =>
                 {
-                    Process(o.InputFile, o.OutFile, o.Verbose);
+                    ProcessFile(o.InputFile, o.OutFile, o.Verbose);
                 });
         }
 
-        static void Process(string input, string output, bool verbose)
+        static void ProcessFile(string input, string output, bool verbose)
         {
-            if (!File.Exists(input)) 
+            if (!File.Exists(input))
             {
                 Console.Error.WriteLine($"Input file {input} does not exist.");
                 return;
             }
 
+            var fileExt = Path.GetExtension(input);
+
+            switch (fileExt)
+            {
+                case ".csv":
+                    ProcessCsvFile(input, output, verbose); return;
+                case ".fit":
+                    ProcessFitFile(input, output, verbose); return;
+                default:
+                    Console.Error.WriteLine($"File extension {fileExt} not recognized");
+                    return;
+
+            }
+        }
+
+        static void ProcessFitFile(string input, string output, bool verbose)
+        {
             var parser = new XeroParser(verbose);
             var session = parser.Process(input);
+            if (session == null) { return; }
+
+            var exporter = new MagnetoSpeedCsvExporter();
+            exporter.Init(session);
+            exporter.Export(output);
+        }
+
+        static void ProcessCsvFile(string input, string output, bool verbose) 
+        {
+            var parser = new XeroCsvReader()
+            {
+                Verbose = verbose
+            };
+
+            var session = parser.ReadXeroCsvFile(input);
+
             if (session == null) { return; }
 
             var exporter = new MagnetoSpeedCsvExporter();
