@@ -7,6 +7,7 @@ namespace XeroChronoImporter.Tests
         private const string ValidMpsShotsHeader = "#,SPEED (MPS),Δ AVG (MPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
         private const string ValidFpsShotsHeader = "#,SPEED (FPS),Δ AVG (FPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
         private const string InvalidShotsHeader = "#, (MPS),Δ AVG (MPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
+
         private const string ValidSessionData = "AVERAGE SPEED,289.1,,,,,,,\r\n" +
                                                 "STD DEV,2.0,,,,,,,\r\n" +
                                                 "SPREAD,6.2,,,,,,,\r\n" +
@@ -16,6 +17,11 @@ namespace XeroChronoImporter.Tests
                                                 "-,,,,,,\r\n" +
                                                 "DATE, \"3. May 2024 at 18.56\",,,,,\r\n" +
                                                 "All shots included in the calculations,,,,,,,﻿";
+
+        private const string ShotsData = "1, 286.2, -2.9, 384.8, 2.7, 18.56.42, , X, \"\" \r\n" +
+                                         "2, 289.5, 0.4, 393.8, 2.7, 18.56.47, , X, \"\" \r\n" +
+                                         "3, 289.0, -0.1, 392.3, 2.7, 18.56.51, , , \"\" \r\n" +
+                                         "-,,,,,,\r\n";
 
 
         [Fact]
@@ -91,6 +97,24 @@ namespace XeroChronoImporter.Tests
                 Assert.Equal(145, actual.Weight);
                 Assert.Equal(WeightUnit.Grains, actual.WeightUnit);
                 Assert.Equal("3.5 gr sub, suppressor", actual.Note);
+            }
+        }
+
+        [Fact]
+        public void ReadShots_Returns_Correct_Values()
+        {
+            var target = new XeroCsvReader();
+
+            using (var reader = new StreamReader(GenerateStreamFromString(ShotsData)))
+            {
+                var actual = target.ReadShots(reader, "m/s");
+                Assert.Equal(3, actual.Count);
+                Assert.Equal(1, actual[0].ShotNumber);
+                Assert.Equal(286.2, actual[0].Speed);
+                Assert.Equal("m/s", actual[0].Unit);
+                Assert.True(actual[0].ColdBore);
+                Assert.False(actual[0].CleanBore);
+                Assert.Equal(new TimeOnly(18, 56, 42), actual[0].Time);
             }
         }
 

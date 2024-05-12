@@ -108,7 +108,7 @@
             return session;
         }
 
-        private List<Shot> ReadShots(StreamReader reader, string speedUnit)
+        public List<Shot> ReadShots(StreamReader reader, string speedUnit)
         {
             var shots = new List<Shot>();
 
@@ -124,8 +124,10 @@
 
 
                 var shotTime = shotData[5].Replace('.', ':');
-                string cleanBore = string.IsNullOrEmpty(shotData[6].Trim()) ? "false": shotData[6];
-                string coldBore = string.IsNullOrEmpty(shotData[7].Trim()) ? "false" : shotData[6];
+                string cleanBoreRawValue = shotData[6].Trim();
+                string coldBoreRawValue = shotData[7].Trim();
+                bool cleanBore = string.IsNullOrEmpty(cleanBoreRawValue) ? false : true;
+                bool coldBore = string.IsNullOrEmpty(coldBoreRawValue) ? false : true;
 
                 var shot = new Shot()
                 {
@@ -133,8 +135,8 @@
                     ShotNumber = int.Parse(shotData[0]),
                     Speed = double.Parse(shotData[1]),
                     Time = TimeOnly.Parse(shotTime),
-                    CleanBore = bool.Parse(cleanBore),
-                    ColdBore = bool.Parse(coldBore),
+                    CleanBore = cleanBore,
+                    ColdBore = coldBore,
                     Notes = shotData[8]
                 };
 
