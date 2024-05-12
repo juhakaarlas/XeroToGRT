@@ -19,30 +19,31 @@
 
         public bool Verbose { get; set; }
 
+        public ShotSession? ReadXeroCsvFile(StreamReader reader)
+        {
+            var session = ReadSessionHeader(reader);
+
+            if (session == null) return null;
+
+            if (session == null) return null;
+
+            string speedUnit = GetSpeedUnitFromShotsHeader(reader) ?? "m/s";
+            List<Shot> shots = ReadShots(reader, speedUnit);
+            session.Shots = shots;
+            session = ReadSessionData(reader, session);
+
+            return session;
+        }
+
         public ShotSession? ReadXeroCsvFile(string filename)
         {
             using (var reader = File.OpenText(filename)) 
             {
-                var session = ReadSessionHeader(reader);
-
-                if (session == null) return null;
-
-                if (session == null) return null;
-
-                string speedUnit = ReadShotsHeader(reader) ?? "m/s";
-
-                List<Shot> shots = ReadShots(reader, speedUnit);
-
-                session.Shots = shots;
-
-                session = ReadSessionData(reader, session);
-
-                return session;
-
+                return ReadXeroCsvFile(reader);
             }
         }
 
-        public (DateOnly date, TimeOnly time) GetDateTimeString(string xeroSessionDate)
+        public static (DateOnly date, TimeOnly time) ParseDateTimeString(string xeroSessionDate)
         {
             string[] date = xeroSessionDate.Split("at");
             string datePart = date[0].Trim().Replace("\"", string.Empty);
@@ -51,7 +52,7 @@
             return (DateOnly.Parse(datePart), TimeOnly.ParseExact(timePart, "HH.mm"));
         }
 
-        private ShotSession ReadSessionData(StreamReader reader, ShotSession session)
+        public ShotSession ReadSessionData(StreamReader reader, ShotSession session)
         {
             int pos = 0;
 
@@ -62,9 +63,22 @@
                 var line = reader.ReadLine();
 
                 if (string.IsNullOrEmpty(line)) continue;
+                
                 var values = line.Split(',');
 
                 var expected = _sessionDataExpectedLineOrder[pos];
+
+                // Session note may contain a quoted value with a comma as part of the note
+                if (expected == SessionNote)
+                {
+                    values = line.Split(',', 2);
+
+                    if (values[1].StartsWith("\""))
+                    {
+                        int endQuote = values[1].LastIndexOf('"');
+                        values[1] = values[1].Substring(0, endQuote);
+                    }
+                }
 
                 if (!values[0].Equals(expected))
                 {
@@ -83,13 +97,15 @@
             {
                 string[] date = sessionDate.Split(',');
 
-                (var datePart, var timePart) = GetDateTimeString(date[1]);
+                (var datePart, var timePart) = ParseDateTimeString(date[1]);
 
                 session.StartTime = new DateTime(datePart, timePart);
             }
-            
-            return session;
 
+            session.Weight = double.Parse(sessionData[SessionProjectileWeight]);
+            session.WeightUnit = WeightUnit.Grains;
+            session.Note = sessionData[SessionNote].Replace("\"", string.Empty);
+            return session;
         }
 
         private List<Shot> ReadShots(StreamReader reader, string speedUnit)
@@ -131,7 +147,7 @@
             return shots;
         }
 
-        private string? ReadShotsHeader(StreamReader reader)
+        public string? GetSpeedUnitFromShotsHeader(StreamReader reader)
         {
             if (reader.Peek() != '#') return null;
 
@@ -149,10 +165,20 @@
 
             string speedUnit = fields[1].Substring(fields[1].IndexOf("(") + 1, 3);
 
-            return speedUnit;
+            return ConvertSpeedUnit(speedUnit);
         }
 
-        private ShotSession? ReadSessionHeader(TextReader reader)
+        public static string ConvertSpeedUnit(string unit)
+        {
+            switch (unit)
+            {
+                case "MPS": return "m/s";
+                default:
+                    return unit;
+            }
+        }
+
+        public ShotSession? ReadSessionHeader(StreamReader reader)
         {
             string header = reader.ReadLine() ?? string.Empty;
 

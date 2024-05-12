@@ -55,6 +55,8 @@
 
         public WeightUnit WeightUnit { get; set; }
 
+        public string? Note { get; set; }
+
         public double AvgSpeed {
             get
             {

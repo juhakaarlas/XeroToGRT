@@ -1,5 +1,3 @@
-using XeroChronoImporter;
-
 namespace XeroChronoImporter.Tests
 {
     public class ShotSessionTests
@@ -19,7 +17,6 @@ namespace XeroChronoImporter.Tests
             {
                 Speed = 3
             }
-
         };
 
 
@@ -87,6 +84,27 @@ namespace XeroChronoImporter.Tests
 
             Assert.Equal(2, target.ExtremeSpread);
             
+        }
+
+        [Fact]
+        public void StdDev_Returns_Correct_Value()
+        {
+            var target = new ShotSession()
+            {
+                Shots = _testShots
+            };
+
+            double expected = StandardDeviation(_testShots.Select(s => s.Speed).ToList());
+            expected = Math.Round(expected, ShotSession.RoundingPrecision);
+            Assert.Equal(expected, target.StdDev);
+        }
+
+        private double StandardDeviation(ICollection<double> values)
+        {
+            double average = values.Average();
+            double sumOfSquaresOfDifferences = values.Select(val => (val - average) * (val - average)).Sum();
+            double sd = Math.Sqrt(sumOfSquaresOfDifferences / values.Count);
+            return sd;
         }
     }
 }
