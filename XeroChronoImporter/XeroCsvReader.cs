@@ -41,6 +41,8 @@ namespace XeroChronoImporter
 
                 session = ReadSessionData(reader, session);
 
+                return session;
+
             }
         }
 
@@ -71,7 +73,7 @@ namespace XeroChronoImporter
             string sessionDate = reader.ReadLine();
 
             session.StartTime = DateTime.Parse(sessionDate);
-
+            return session;
 
         }
 
