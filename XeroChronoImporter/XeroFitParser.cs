@@ -14,24 +14,10 @@ namespace XeroChronoImporter
             _logger = logger;
         }
 
-        public XeroFitParser(bool verbose) { 
-            Verbose = verbose;
-        }
-
         public ShotSession? Process(string path)
         {
             LogOutput("FIT Decoder for Garmin Xero C1 Pro");
-           
-            try
-            {
-                return ProcessFitFile(path);
-
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Exception {ex}");
-            }
-            return null;
+            return ProcessFitFile(path);
         }
 
         private ShotSession? ProcessFitFile(string path)
@@ -50,21 +36,6 @@ namespace XeroChronoImporter
             {
                 LogOutput($"Decoding {path}...");
                 fitDecoder.Decode();
-            }
-            catch (FileTypeException ex)
-            {
-                Console.Error.WriteLine("Decoder caught FileTypeException: " + ex.Message);
-                return null;
-            }
-            catch (FitException ex)
-            {
-                Console.Error.WriteLine("Decoder caught FitException: " + ex.Message);
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine("Decoder caught Exception: " + ex.Message);
-                return null;
             }
             finally
             {

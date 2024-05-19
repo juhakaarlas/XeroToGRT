@@ -12,12 +12,24 @@
 
         private readonly string[] _sessionDataExpectedLineOrder =
             [
-                SessionAvgSpeed, SessionStdDev, SessionSpread, SessionAvgPowerFactor, SessionProjectileWeight, SessionNote
+                SessionAvgSpeed, 
+                SessionStdDev, 
+                SessionSpread, 
+                SessionAvgPowerFactor, 
+                SessionProjectileWeight, 
+                SessionNote
             ];
 
         public const int CsvShotFieldCount = 9;
 
         public bool Verbose { get; set; }
+
+        private ILogger _logger;
+
+        public XeroCsvParser(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public ShotSession? Process(string path)
         {
@@ -25,6 +37,8 @@
             {
                 throw new FileNotFoundException(path);
             }
+
+            LogMessage("Processing CSV file...");
 
             using (var file = File.OpenRead(path))
             {
@@ -37,26 +51,18 @@
 
         public ShotSession? ReadXeroCsvFile(StreamReader reader)
         {
+            LogMessage("Processing CSV header...");
             var session = ReadSessionHeader(reader);
 
             if (session == null) return null;
-
-            if (session == null) return null;
-
+            
             SpeedUnit speedUnit = GetSpeedUnitFromShotsHeader(reader) ?? SpeedUnit.Mps;
+            LogMessage("Processing shot data...");
             List<Shot> shots = ReadShots(reader, speedUnit);
             session.Shots = shots;
             session = ReadSessionData(reader, session);
 
             return session;
-        }
-
-        public ShotSession? ReadXeroCsvFile(string filename)
-        {
-            using (var reader = File.OpenText(filename)) 
-            {
-                return ReadXeroCsvFile(reader);
-            }
         }
 
         public static (DateOnly date, TimeOnly time) ParseDateTimeString(string xeroSessionDate)
@@ -113,6 +119,11 @@
             {
                 string[] date = sessionDate.Split(',');
 
+                if (date[0] != SessionDate) 
+                {
+                    throw new FormatException($"Session data fields are not in expected order. Expected {sessionDate} but read {date[0]}");
+                }
+
                 (var datePart, var timePart) = ParseDateTimeString(date[1]);
 
                 session.StartTime = new DateTime(datePart, timePart);
@@ -133,6 +144,8 @@
                 var shotCsv = reader.ReadLine();
 
                 if (string.IsNullOrEmpty(shotCsv)) continue;
+
+                LogMessage(shotCsv);
 
                 string[]? shotData = shotCsv.Split(',');
 
@@ -189,12 +202,6 @@
         public static SpeedUnit ConvertSpeedUnit(string unit)
         {
             return EnumExtensions.GetValueFromDescription<SpeedUnit>(unit);
-            //switch (unit)
-            //{
-            //    case "MPS": return "m/s";
-            //    default:
-            //        return unit;
-            //}
         }
 
         public ShotSession? ReadSessionHeader(StreamReader reader)
@@ -218,6 +225,13 @@
             };
 
             return session;
+        }
+
+        private void LogMessage(string message)
+        {
+            if (!Verbose || _logger == null) return;
+
+            _logger.Log(message);
         }
     }
 }

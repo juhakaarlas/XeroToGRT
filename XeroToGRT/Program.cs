@@ -55,7 +55,11 @@ namespace XeroToGRT
 
         static void ProcessFitFile(string input, string output, bool verbose)
         {
-            var parser = new XeroFitParser(verbose);
+            var parser = new XeroFitParser(new ConsoleLogger())
+            {
+                Verbose = verbose
+            };
+            
             var session = parser.Process(input);
             if (session == null) { return; }
 
@@ -66,7 +70,7 @@ namespace XeroToGRT
 
         static void ProcessCsvFile(string input, string output, bool verbose) 
         {
-            var parser = new XeroCsvParser()
+            var parser = new XeroCsvParser(new ConsoleLogger())
             {
                 Verbose = verbose
             };
