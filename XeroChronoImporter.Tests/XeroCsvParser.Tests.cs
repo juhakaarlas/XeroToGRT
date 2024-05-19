@@ -53,9 +53,9 @@
         }
 
         [Theory]
-        [InlineData(ValidMpsShotsHeader, "m/s")]
-        [InlineData(ValidFpsShotsHeader, "FPS")]
-        public void GetSpeedUnitFromShotsHeader_Returns_Correct_Value(string input, string expected)
+        [InlineData(ValidMpsShotsHeader, SpeedUnit.Mps)]
+        [InlineData(ValidFpsShotsHeader, SpeedUnit.Fps)]
+        public void GetSpeedUnitFromShotsHeader_Returns_Correct_Value(string input, SpeedUnit expected)
         {
             var target = new XeroCsvParser();
             using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(input)))
@@ -79,9 +79,9 @@
         }
 
         [Theory]
-        [InlineData("MPS", "m/s")]
-        [InlineData("FPS", "FPS")]
-        public void ConvertSpeedUnit_Returns_Correct_Value_For_MPS(string input, string expected)
+        [InlineData("MPS", SpeedUnit.Mps)]
+        [InlineData("FPS", SpeedUnit.Fps)]
+        public void ConvertSpeedUnit_Returns_Correct_Value_For_MPS(string input, SpeedUnit expected)
         {
             Assert.Equal(expected, XeroCsvParser.ConvertSpeedUnit(input));
         }
@@ -110,11 +110,11 @@
 
             using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(ShotsData)))
             {
-                var actual = target.ReadShots(reader, "m/s");
+                var actual = target.ReadShots(reader, SpeedUnit.Mps);
                 Assert.Equal(3, actual.Count);
                 Assert.Equal(1, actual[0].ShotNumber);
                 Assert.Equal(286.2, actual[0].Speed);
-                Assert.Equal("m/s", actual[0].Unit);
+                Assert.Equal(SpeedUnit.Mps, actual[0].Unit);
                 Assert.True(actual[0].ColdBore);
                 Assert.False(actual[0].CleanBore);
                 Assert.Equal(new TimeOnly(18, 56, 42), actual[0].Time);
@@ -134,7 +134,7 @@
                     Assert.NotNull(session);
                     Assert.Equal(10, session.ShotCount);
                     Assert.Equal("Pistol Cartridge", session.CartridgeType);
-                    Assert.Equal("m/s", session.SpeedUnit);
+                    Assert.Equal(SpeedUnit.Mps, session.SpeedUnit);
                 }
             }
         }
@@ -155,7 +155,7 @@
             Assert.NotNull(session);
             Assert.Equal(10, session.ShotCount);
             Assert.Equal("Pistol Cartridge", session.CartridgeType);
-            Assert.Equal("m/s", session.SpeedUnit);
+            Assert.Equal(SpeedUnit.Mps, session.SpeedUnit);
         }
     }
 }

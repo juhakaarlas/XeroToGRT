@@ -51,7 +51,7 @@ namespace XeroChronoImporter
                 var shot = new Shot()
                 {
                     Speed = Math.Round(value, SpeedRoundingPrecision),
-                    Unit = shotData.GetField("ShotSpeed").Units,
+                    Unit = EnumExtensions.GetValueFromDescription<SpeedUnit>(shotData.GetField("ShotSpeed").Units),
                     Timestamp = shotData.GetTimestamp().GetDateTime(),
                     ShotNumber = shotNum
                 };

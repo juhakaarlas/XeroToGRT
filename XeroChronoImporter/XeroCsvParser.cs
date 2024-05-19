@@ -43,7 +43,7 @@
 
             if (session == null) return null;
 
-            string speedUnit = GetSpeedUnitFromShotsHeader(reader) ?? "m/s";
+            SpeedUnit speedUnit = GetSpeedUnitFromShotsHeader(reader) ?? SpeedUnit.Mps;
             List<Shot> shots = ReadShots(reader, speedUnit);
             session.Shots = shots;
             session = ReadSessionData(reader, session);
@@ -124,7 +124,7 @@
             return session;
         }
 
-        public List<Shot> ReadShots(StreamReader reader, string speedUnit)
+        public List<Shot> ReadShots(StreamReader reader, SpeedUnit speedUnit)
         {
             var shots = new List<Shot>();
 
@@ -165,7 +165,7 @@
             return shots;
         }
 
-        public string? GetSpeedUnitFromShotsHeader(StreamReader reader)
+        public SpeedUnit? GetSpeedUnitFromShotsHeader(StreamReader reader)
         {
             if (reader.Peek() != '#') return null;
 
@@ -186,14 +186,15 @@
             return ConvertSpeedUnit(speedUnit);
         }
 
-        public static string ConvertSpeedUnit(string unit)
+        public static SpeedUnit ConvertSpeedUnit(string unit)
         {
-            switch (unit)
-            {
-                case "MPS": return "m/s";
-                default:
-                    return unit;
-            }
+            return EnumExtensions.GetValueFromDescription<SpeedUnit>(unit);
+            //switch (unit)
+            //{
+            //    case "MPS": return "m/s";
+            //    default:
+            //        return unit;
+            //}
         }
 
         public ShotSession? ReadSessionHeader(StreamReader reader)
