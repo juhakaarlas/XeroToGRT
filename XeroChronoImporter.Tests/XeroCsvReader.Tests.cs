@@ -1,9 +1,10 @@
-﻿using XeroChronoImporter;
-
-namespace XeroChronoImporter.Tests
+﻿namespace XeroChronoImporter.Tests
 {
     public class XeroCsvReaderTests
     {
+        /** These constants are for testing the individual section parsers more efficiently.
+            For full CSV file testing, there is a dedicated test case for XeroParser.cs which loads the included CSV file.
+        */
         private const string ValidMpsShotsHeader = "#,SPEED (MPS),Δ AVG (MPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
         private const string ValidFpsShotsHeader = "#,SPEED (FPS),Δ AVG (FPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
         private const string InvalidShotsHeader = "#, (MPS),Δ AVG (MPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
@@ -118,7 +119,7 @@ namespace XeroChronoImporter.Tests
             }
         }
 
-        private static Stream GenerateStreamFromString(string s)
+        private Stream GenerateStreamFromString(string s)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
