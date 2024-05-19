@@ -6,9 +6,12 @@ namespace XeroChronoImporter
     {
         public bool Verbose {  get; set; }
 
-        public XeroFitParser()
+        private ILogger? _logger;
+
+        public XeroFitParser(ILogger logger)
         {
             Verbose = false;
+            _logger = logger;
         }
 
         public XeroFitParser(bool verbose) { 
@@ -78,9 +81,9 @@ namespace XeroChronoImporter
 
         private void LogOutput(string message)
         {
-            if (!Verbose) return;
+            if (!Verbose || _logger == null) return;
 
-            Console.WriteLine(message);
+            _logger.Log(message);
         }
     }
 }
