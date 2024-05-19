@@ -2,16 +2,16 @@
 
 namespace XeroChronoImporter
 {
-    public class XeroParser
+    public class XeroFitParser : IXeroParser
     {
         public bool Verbose {  get; set; }
 
-        public XeroParser()
+        public XeroFitParser()
         {
             Verbose = false;
         }
 
-        public XeroParser(bool verbose) { 
+        public XeroFitParser(bool verbose) { 
             Verbose = verbose;
         }
 

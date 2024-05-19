@@ -50,13 +50,12 @@ namespace XeroToGRT
                 default:
                     Console.Error.WriteLine($"File extension {fileExt} not recognized");
                     return;
-
             }
         }
 
         static void ProcessFitFile(string input, string output, bool verbose)
         {
-            var parser = new XeroParser(verbose);
+            var parser = new XeroFitParser(verbose);
             var session = parser.Process(input);
             if (session == null) { return; }
 
@@ -67,7 +66,7 @@ namespace XeroToGRT
 
         static void ProcessCsvFile(string input, string output, bool verbose) 
         {
-            var parser = new XeroCsvReader()
+            var parser = new XeroCsvParser()
             {
                 Verbose = verbose
             };

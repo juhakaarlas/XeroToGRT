@@ -1,6 +1,6 @@
 ﻿namespace XeroChronoImporter
 {
-    public class XeroCsvReader
+    public class XeroCsvParser : IXeroParser
     {
         private const string SessionAvgSpeed = "AVERAGE SPEED";
         private const string SessionStdDev = "STD DEV";
@@ -18,6 +18,17 @@
         public const int CsvShotFieldCount = 9;
 
         public bool Verbose { get; set; }
+
+        public ShotSession? Process(string path)
+        {
+            using (var file = File.OpenRead(path))
+            {
+                using (var reader = new StreamReader(file))
+                {
+                    return ReadXeroCsvFile(reader);
+                }
+            }
+        }
 
         public ShotSession? ReadXeroCsvFile(StreamReader reader)
         {
