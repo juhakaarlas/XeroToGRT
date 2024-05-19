@@ -1,6 +1,6 @@
 ﻿namespace XeroChronoImporter.Tests
 {
-    public class XeroCsvReaderTests
+    public class XeroCsvParserTests
     {
         /** These constants are for testing the individual section parsers more efficiently.
             For full CSV file testing, there is a dedicated test case which loads the included CSV file.
