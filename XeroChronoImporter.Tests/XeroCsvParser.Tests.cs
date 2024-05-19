@@ -3,7 +3,7 @@
     public class XeroCsvReaderTests
     {
         /** These constants are for testing the individual section parsers more efficiently.
-            For full CSV file testing, there is a dedicated test case for XeroParser.cs which loads the included CSV file.
+            For full CSV file testing, there is a dedicated test case which loads the included CSV file.
         */
         private const string ValidMpsShotsHeader = "#,SPEED (MPS),Δ AVG (MPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
         private const string ValidFpsShotsHeader = "#,SPEED (FPS),Δ AVG (FPS),KE (J),POWER FACTOR (N⋅S),TIME,CLEAN BORE,COLD BORE,SHOT NOTES";
@@ -43,7 +43,7 @@
         public void ReadSessionHeader_Returns_Correct_Session()
         {
             var target = new XeroCsvParser();
-            using (var reader = new StreamReader(GenerateStreamFromString("\"Pistol Cartridge, 145,0 gr\"")))
+            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString("\"Pistol Cartridge, 145,0 gr\"")))
             {
                 var actual = target.ReadSessionHeader(reader);
                 Assert.NotNull(actual);
@@ -58,7 +58,7 @@
         public void GetSpeedUnitFromShotsHeader_Returns_Correct_Value(string input, string expected)
         {
             var target = new XeroCsvParser();
-            using (var reader = new StreamReader(GenerateStreamFromString(input)))
+            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(input)))
             {
                 var actual = target.GetSpeedUnitFromShotsHeader(reader);
                 Assert.NotNull(actual);
@@ -71,7 +71,7 @@
         public void GetSpeedUnitFromShotsHeader_Throws_With_Incorrect_Value(string input, string exceptionMessage)
         {
             var target = new XeroCsvParser();
-            using (var reader = new StreamReader(GenerateStreamFromString(input)))
+            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(input)))
             {
                 var ex = Assert.Throws<FormatException>( () => target.GetSpeedUnitFromShotsHeader(reader));
                 Assert.Equal(exceptionMessage, ex.Message);
@@ -92,7 +92,7 @@
             var target = new XeroCsvParser();
             var session = new ShotSession();
 
-            using (var reader = new StreamReader(GenerateStreamFromString(ValidSessionData)))
+            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(ValidSessionData)))
             {
                 var actual = target.ReadSessionData(reader, session);
 
@@ -108,7 +108,7 @@
         {
             var target = new XeroCsvParser();
 
-            using (var reader = new StreamReader(GenerateStreamFromString(ShotsData)))
+            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(ShotsData)))
             {
                 var actual = target.ReadShots(reader, "m/s");
                 Assert.Equal(3, actual.Count);
@@ -122,9 +122,9 @@
         }
 
         [Fact]
-        public void Can_Process_Csv_File()
+        public void Can_Read_Csv_File()
         {
-            using (var fileStream = GetTestDataFileStream(TestCsvFile))
+            using (var fileStream = TestUtils.GetTestDataFileStream(TestCsvFile))
             {
                 using (var reader = new StreamReader(fileStream))
                 {
@@ -139,28 +139,23 @@
             }
         }
 
-
-        private Stream GenerateStreamFromString(string s)
+        [Fact]
+        public void Process_Throws_When_File_Doesnt_Exist() 
         {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
+            var target = new XeroCsvParser();
+            Assert.Throws<FileNotFoundException>(() => target.Process("nope"));
         }
 
-
-        private FileStream GetTestDataFileStream(string fileName)
+        [Fact]
+        public void Can_Process_Csv_File()
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory() + "/TestData", fileName);
+            var target = new XeroCsvParser();
+            var session = target.Process(TestUtils.GetTestDataFilePath(TestCsvFile));
 
-            if (!File.Exists(filePath))
-            {
-                throw new ArgumentException($"Could not find file at path: {filePath}");
-            }
-
-            return File.OpenRead(filePath);
+            Assert.NotNull(session);
+            Assert.Equal(10, session.ShotCount);
+            Assert.Equal("Pistol Cartridge", session.CartridgeType);
+            Assert.Equal("m/s", session.SpeedUnit);
         }
     }
 }

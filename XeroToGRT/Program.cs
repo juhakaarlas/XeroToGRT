@@ -71,7 +71,7 @@ namespace XeroToGRT
                 Verbose = verbose
             };
 
-            var session = parser.ReadXeroCsvFile(input);
+            var session = parser.Process(input);
 
             if (session == null) { return; }
 

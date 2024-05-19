@@ -21,6 +21,11 @@
 
         public ShotSession? Process(string path)
         {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+
             using (var file = File.OpenRead(path))
             {
                 using (var reader = new StreamReader(file))
