@@ -5,13 +5,6 @@ namespace XeroChronoImporter
 {
     public static class EnumExtensions
     {
-        public static string ToString(this Enum e)
-        {
-            var desc = e.GetDescription();
-
-            return desc != null ? desc : e.GetType().ToString();
-        }
-
         public static string? GetDescription(this Enum value)
         {
             Type type = value.GetType();
