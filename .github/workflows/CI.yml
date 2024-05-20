@@ -31,4 +31,11 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test with Code Coverage
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
+    - name: Code Coverage Annotation
+      uses: ggilder/codecoverage@v1.2.0
+      with:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        COVERAGE_FILE_PATH: "./XeroChronoImporter.Tests/lcov.info"
+        COVERAGE_FORMAT: "lcov"
+      
