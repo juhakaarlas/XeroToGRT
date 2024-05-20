@@ -7,7 +7,7 @@ namespace XeroChronoImporter.Tests
             new Shot ()
             {
                 Speed = 1,
-                Unit = "m/s"
+                Unit = SpeedUnit.Mps
             },
             new Shot ()
             {
@@ -49,7 +49,7 @@ namespace XeroChronoImporter.Tests
                 Shots = _testShots
             };
 
-            Assert.Equal("m/s", target.SpeedUnit);
+            Assert.Equal(SpeedUnit.Mps, target.SpeedUnit);
         }
 
         [Fact]

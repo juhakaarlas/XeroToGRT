@@ -1,5 +1,5 @@
 ﻿using Dynastream.Fit;
-using File = Dynastream.Fit.File;
+using FitFile = Dynastream.Fit.File;
 
 namespace XeroChronoImporter
 {
@@ -13,7 +13,7 @@ namespace XeroChronoImporter
         {
             get
             {
-                return FirstFileIdMesg != null && (FirstFileIdMesg.GetType() ?? File.Invalid) == ShotSessionDecoder.ShotSessionFile;
+                return FirstFileIdMesg != null && (FirstFileIdMesg.GetType() ?? FitFile.Invalid) == ShotSessionDecoder.ShotSessionFile;
             }
         }
 
@@ -51,7 +51,7 @@ namespace XeroChronoImporter
                 var shot = new Shot()
                 {
                     Speed = Math.Round(value, SpeedRoundingPrecision),
-                    Unit = shotData.GetField("ShotSpeed").Units,
+                    Unit = EnumExtensions.GetValueFromDescription<SpeedUnit>(shotData.GetField("ShotSpeed").Units),
                     Timestamp = shotData.GetTimestamp().GetDateTime(),
                     ShotNumber = shotNum
                 };

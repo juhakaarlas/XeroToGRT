@@ -42,7 +42,6 @@ namespace XeroChronoImporter {
 
             // Connect Message Broadcaster Events to their onMesg delegates
             mesgBroadcaster.FileIdMesgEvent += OnFileIdMesg;
-            mesgBroadcaster.RecordMesgEvent += OnRecordMesg;
 
             // Connect FitListener to get lists of each message type with FitMessages
             decoder.MesgEvent += _fitListener.OnMesg;
@@ -102,22 +101,6 @@ namespace XeroChronoImporter {
             if (fileIdMsg.GetType() != fileType)
             {
                 throw new FileTypeException($"Expected FIT File Type: {fileType}, received File Type: {fileIdMsg.GetType()}");
-            }
-        }
-
-        public void OnRecordMesg(object sender, MesgEventArgs e)
-        {
-            foreach (Field field in e.mesg.Fields)
-            {
-                if (!field.Name.Equals("unknown", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    RecordFieldNames.Add(field.Name);
-                }
-            }
-
-            foreach (DeveloperField devField in e.mesg.DeveloperFields)
-            {
-                RecordDeveloperFieldNames.Add(devField.Name);
             }
         }
     }

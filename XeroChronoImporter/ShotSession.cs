@@ -1,38 +1,5 @@
 ﻿namespace XeroChronoImporter
 {
-    public enum SpeedUnit
-    {
-        Mps,
-        Fps,
-        Kph,
-        Mph
-    }
-
-    public enum WeightUnit
-    {
-        Grains,
-        Grams
-    }
-
-    public class Shot
-    {
-        public int ShotNumber { get; set; }
-
-        public double Speed { get; set; }
-
-        public DateTime Timestamp { get; set; }
-
-        public TimeOnly Time {  get; set; }
-
-        public string? Unit {  get; set; }
-
-        public bool ColdBore { get; set; }
-
-        public bool CleanBore { get; set; }
-
-        public string? Notes {  get; set; }
-    }
-
     public class ShotSession
     {
         private const double InvalidSpeed = -1;
@@ -47,7 +14,7 @@
 
         private double _avgSpeed = InvalidSpeed;
 
-        public string? SpeedUnit => Shots?.FirstOrDefault()?.Unit;
+        public SpeedUnit? SpeedUnit => Shots?.FirstOrDefault()?.Unit;
 
         public string? CartridgeType { get; set; }
 
