@@ -36,6 +36,6 @@ jobs:
       uses: ggilder/codecoverage@v1.2.0
       with:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        COVERAGE_FILE_PATH: "./XeroChronoImporter.Tests/lcov.info"
+        COVERAGE_FILE_PATH: "**/XeroChronoImporter.Tests/lcov.info"
         COVERAGE_FORMAT: "lcov"
-      
+        DEBUG: coverage
