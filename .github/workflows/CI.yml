@@ -38,4 +38,4 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         COVERAGE_FILE_PATH: "./XeroChronoImporter.Tests/lcov.info"
         COVERAGE_FORMAT: "lcov"
-        DEBUG: coverage
+        
