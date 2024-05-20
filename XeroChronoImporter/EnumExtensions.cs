@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace XeroChronoImporter
@@ -25,19 +26,21 @@ namespace XeroChronoImporter
             }
             return null;
         }
-
-        public static T GetValueFromDescription<T>(string description) where T : Enum
+        
+        public static T? GetValueFromDescription<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>
+            (string description) where T : Enum
         {
             foreach (var field in typeof(T).GetFields())
             {
                 if (field.Name.ToLower() == description.ToLower())
-                    return (T)field.GetValue(null);
+                    return (T?)field.GetValue(null);
 
                 if (Attribute.GetCustomAttribute(field,
                 typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
                 {
                     if (attribute.Description.ToLower() == description.ToLower())
-                        return (T)field.GetValue(null);
+                        return (T?)field.GetValue(null);
                 }
             }
 

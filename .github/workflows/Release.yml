@@ -1,17 +1,14 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: Build and Test .NET
+name: Release 
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
-    name: Build and Test
+    name: Publish
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -32,10 +29,15 @@ jobs:
       run: dotnet build --no-restore
     - name: Test with Code Coverage
       run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
-    - name: Code Coverage Annotation
-      uses: ggilder/codecoverage@v1.2.0
+    - name: Publish
+      run: dotnet publish --configuration Release -r win-x64 --self-contained -p:PublishSingleFile=true ./XeroToGRT/XeroToGRT.csproj -o publish
+    - name: ZIP published app
+      run: zip -r XeroToGRT.zip ./publish/XeroToGRT.exe 
+    - name: Release with Notes
+      uses: softprops/action-gh-release@v2
       with:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        COVERAGE_FILE_PATH: "./XeroChronoImporter.Tests/lcov.info"
-        COVERAGE_FORMAT: "lcov"
-        
+        prerelease:
+        files: |
+          XeroToGRT.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

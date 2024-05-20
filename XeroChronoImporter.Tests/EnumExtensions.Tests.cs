@@ -13,7 +13,7 @@
         [InlineData(SpeedUnit.Kph, "km/h")]
         [InlineData(SpeedUnit.Mph, "mph")]
         [InlineData(NoDesc.NoDesc, null)]
-        public void GetDescription_Returns_Correct_Value(Enum e, string expected)
+        public void GetDescription_Returns_Correct_Value(Enum e, string? expected)
         {
             Assert.Equal(expected, e.GetDescription());
         }
