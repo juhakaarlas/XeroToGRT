@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - v*
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -30,4 +30,14 @@ jobs:
     - name: Test with Code Coverage
       run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
     - name: Publish
-      run: dotnet publish --configuration Release -r win-x64 --self-contained -p:PublishSingleFile=true ./XeroToGRT/XeroToGRT.csproj
+      run: dotnet publish --configuration Release -r win-x64 --self-contained -p:PublishSingleFile=true ./XeroToGRT/XeroToGRT.csproj -o publish
+    - name: ZIP published app
+      run: zip -r XeroToGRT.zip ./publish/XeroToGRT.exe 
+    - name: Release with Notes
+      uses: softprops/action-gh-release@v2
+      with:
+        prerelease:
+        files: |
+          XeroToGRT.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
