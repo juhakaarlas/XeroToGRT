@@ -36,8 +36,9 @@ jobs:
     - name: Release with Notes
       uses: softprops/action-gh-release@v2
       with:
-        prerelease:
+        token: ${{ secrets.CREATE_RELEASE }}
+        draft: true
+        prerelease: true
+        make_latest: true
         files: |
           XeroToGRT.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
