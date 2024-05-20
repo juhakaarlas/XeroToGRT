@@ -1,0 +1,33 @@
+name: Release 
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - *-rc
+
+jobs:
+  build:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test with Code Coverage
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
+    - name: Publish
+      run: dotnet publish --configuration Release -r win-x64 --self-contained -p:PublishSingleFile=true .\XeroToGRT\XeroToGRT.csproj
