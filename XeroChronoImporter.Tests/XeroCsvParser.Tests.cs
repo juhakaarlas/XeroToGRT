@@ -1,4 +1,6 @@
-﻿namespace XeroChronoImporter.Tests
+﻿using System.Runtime.InteropServices.JavaScript;
+
+namespace XeroChronoImporter.Tests
 {
     public class XeroCsvParserTests
     {
@@ -18,6 +20,16 @@
                                                 "-,,,,,,\r\n" +
                                                 "DATE, \"3. May 2024 at 18.56\",,,,,\r\n" +
                                                 "All shots included in the calculations,,,,,,,﻿";
+
+        private const string ValidSessionDataWithKe = "AVERAGE SPEED,545.7,,,,,,,\r\n" +
+                                                      "STD DEV,2.5,,,,,,,\r\n" +
+                                                      "SPREAD,8.2,,,,,,,\r\nAVERAGE POWER FACTOR,3.5,,,,,,,\r\n" +
+                                                      "PROJECTILE WEIGHT(GRAINS),100.0,,,,,,,\r\n" +
+                                                      "AVG KINETIC ENERGY,964.7,,,,,,,\r\n" + "" +
+                                                      "SESSION NOTE,\"Lapua 100gn OTCE N110 14.4gn\",,,,,,," +
+                                                      "-,,,,,,\r\n" +
+                                                      "DATE, \"23. October 2025 at 22.31\",,,,,\r\n" +
+                                                      "All shots included in the calculations,,,,,,,";
 
         private const string InvalidSessionData = "STD DEV,2.0,,,,,,,\r\n" +
                                                   "SPREAD,6.2,,,,,,,\r\n";
@@ -134,16 +146,32 @@
         }
 
         [Fact]
-        public void ReadSessionData_Throws_With_Incorrect_Fields()
+        public void ReadSessionData_Returns_Correct_Values_With_Ke()
         {
             var target = new XeroCsvParser(_testLogger);
             var session = new ShotSession();
 
-            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(InvalidSessionData)))
+            using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(ValidSessionDataWithKe)))
             {
-                Assert.Throws<FormatException>(() => target.ReadSessionData(reader, session));
+                var actual = target.ReadSessionData(reader, session);
+                Assert.Equal(new DateTime(2025, 10, 23, 22, 31, 0), actual.StartTime);
+                Assert.Equal(100, actual.Weight);
+                Assert.Equal(WeightUnit.Grains, actual.WeightUnit);
+                Assert.Equal("Lapua 100gn OTCE N110 14.4gn", actual.Note);
             }
         }
+
+        //[Fact]
+        //public void ReadSessionData_Throws_With_Incorrect_Fields()
+        //{
+        //    var target = new XeroCsvParser(_testLogger);
+        //    var session = new ShotSession();
+
+        //    using (var reader = new StreamReader(TestUtils.GenerateStreamFromString(InvalidSessionData)))
+        //    {
+        //        Assert.Throws<FormatException>(() => target.ReadSessionData(reader, session));
+        //    }
+        //}
 
         [Fact]
         public void ReadSessionData_Throws_With_Bad_Date_Field()

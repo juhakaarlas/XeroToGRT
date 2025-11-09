@@ -21,4 +21,16 @@ namespace XeroChronoImporter
         [Description("Grams")]
         Grams
     }
+
+    public enum SessionData
+    {
+        AvgSpeed,
+        StdDev,
+        Spread,
+        AvgPowerFactor,
+        ProjectileWeight,
+        AvgKineticEnergy,
+        Note,
+        Date
+    }
 }

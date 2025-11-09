@@ -7,8 +7,22 @@
         private const string SessionSpread = "SPREAD";
         private const string SessionAvgPowerFactor = "AVERAGE POWER FACTOR";
         private const string SessionProjectileWeight = "PROJECTILE WEIGHT(GRAINS)";
+        private const string SessionAvgKineticEnergy = "AVG KINETIC ENERGY";
         private const string SessionNote = "SESSION NOTE";
         private const string SessionDate = "DATE";
+
+        private readonly Dictionary<string, SessionData> _sessionDataFieldMap =
+            new Dictionary<string, SessionData>
+            {
+                { SessionAvgSpeed, SessionData.AvgSpeed },
+                { SessionStdDev, SessionData.StdDev },
+                { SessionSpread, SessionData.Spread },
+                { SessionAvgPowerFactor, SessionData.AvgPowerFactor },
+                { SessionProjectileWeight, SessionData.ProjectileWeight },
+                { SessionAvgKineticEnergy, SessionData.AvgKineticEnergy },
+                { SessionNote, SessionData.Note },
+                { SessionDate, SessionData.Date }
+            };
 
         private readonly string[] _sessionDataExpectedLineOrder =
             [
@@ -16,7 +30,8 @@
                 SessionStdDev, 
                 SessionSpread, 
                 SessionAvgPowerFactor, 
-                SessionProjectileWeight, 
+                SessionProjectileWeight,
+                SessionAvgKineticEnergy,
                 SessionNote
             ];
 
@@ -76,11 +91,11 @@
 
         public ShotSession ReadSessionData(StreamReader reader, ShotSession session)
         {
-            int pos = 0;
+            //int pos = 0;
 
-            Dictionary<string, string> sessionData = new Dictionary<string, string>();
+            Dictionary<SessionData, string> sessionData = new Dictionary<SessionData, string>();
 
-            while (reader.Peek() != '-')
+            while (reader.Peek() != '-' && reader.Peek() != -1)
             {
                 var line = reader.ReadLine();
 
@@ -88,10 +103,19 @@
                 
                 var values = line.Split(',');
 
-                var expected = _sessionDataExpectedLineOrder[pos];
+                // var expected = _sessionDataExpe1ctedLineOrder[pos];
+                SessionData current;
+                
+                bool success = _sessionDataFieldMap.TryGetValue(values[0], out current);
+
+                if (!success) 
+                { 
+                    LogMessage($"Session data field {values[0]} not recognized...skipping.");
+                    continue;
+                }
 
                 // Session note may contain a quoted value with a comma as part of the note
-                if (expected == SessionNote)
+                if (current == SessionData.Note)
                 {
                     values = line.Split(',', 2);
 
@@ -102,26 +126,29 @@
                     }
                 }
 
-                if (!values[0].Equals(expected))
-                {
-                    throw new FormatException($"Session data fields are not in expected order. Expected {expected} but read {values[0]}");
-                }
+                //if (!values[0].Equals(expected))
+                //{
+                //    throw new FormatException($"Session data fields are not in expected order. Expected {expected} but read {values[0]}");
+                //}
 
-                sessionData[values[0]] = values[1];
-                pos++;
+                sessionData[current] = values[1];
+                //pos++;
             }
 
             // skip the separator and read the session date
             reader.ReadLine();
-            string? sessionDate = reader.ReadLine();
+            //string? sessionDate = reader.ReadLine();
+            string dateString = string.Empty;
 
-            if (!string.IsNullOrEmpty(sessionDate)) 
+            bool hasDate = sessionData.TryGetValue(SessionData.Date, out dateString);
+
+            if (hasDate && !String.IsNullOrEmpty(dateString)) 
             {
-                string[] date = sessionDate.Split(',');
+                string[] date = dateString.Split(',');
 
                 if (date[0] != SessionDate) 
                 {
-                    throw new FormatException($"Session data fields are not in expected order. Expected {sessionDate} but read {date[0]}");
+                    throw new FormatException($"Session data fields are not in expected order. Expected {dateString} but read {date[0]}");
                 }
 
                 (var datePart, var timePart) = ParseDateTimeString(date[1]);
@@ -129,9 +156,9 @@
                 session.StartTime = new DateTime(datePart, timePart);
             }
 
-            session.Weight = double.Parse(sessionData[SessionProjectileWeight]);
+            session.Weight = double.Parse(sessionData[SessionData.ProjectileWeight]);
             session.WeightUnit = WeightUnit.Grains;
-            session.Note = sessionData[SessionNote].Replace("\"", string.Empty);
+            session.Note = sessionData[SessionData.Note].Replace("\"", string.Empty);
             return session;
         }
 
